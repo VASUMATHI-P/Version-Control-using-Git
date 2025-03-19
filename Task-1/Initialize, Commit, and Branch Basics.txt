@@ -1,0 +1,70 @@
+Git Commands for Initialization, Commit, and Branch Basics
+
+1. Initialize a new Git repository
+mkdir git
+cd git
+
+# Initialize an empty Git repository
+git init                     
+=> Initialized empty Git repository in C:/Users/Vasumathi/Desktop/git/.git/
+
+-----------------------------------------------------------------------------------
+2. Create 2 files and make the first commit
+# Create 2 files file1 and file2
+echo "Hello, Git!" > file1.txt  
+echo "This is a Git tutorial" > file2.txt
+
+# Stage the files for commit
+git add file1.txt file2.txt
+
+# Commit the changes
+git commit -m "Initial commit: Added file1.txt and file2.txt"
+
+=> [master (root-commit) b13d0a3] Initial commit: Added file1.txt and file2.txt
+  2 files changed, 2 insertions(+)
+  create mode 100644 file1.txt
+  create mode 100644 file2.txt  
+
+----------------------------------------------------------------------------------
+3. Create a new branch and switch to it
+git branch new-branch  
+    
+git checkout new-branch
+=> Switched to branch 'new-branch'
+
+----------------------------------------------------------------------------------
+4. Make Changes in the New Branch and Commit it
+echo "Appending contents in File1.txt" >> file1.txt  
+git add file1.txt  
+                    
+git commit -m "Updated file1.txt in the new feature" 
+=> [new-branch 24b139e] Updated file.txt in the new-branch
+   1 file changed, 1 insertion(+)
+
+#Before merging
+git log --oneline --graph --all
+* 75c4512 (new-branch) Updated file.txt in the new-branch
+* daffe33 (HEAD -> master) Initial commit: Added file1.txt and file2.txt
+
+----------------------------------------------------------------------------------
+5. Switch back to the Master branch and merge 
+git checkout master  
+=> Switched to branch 'master'
+         
+git merge feature-branch
+=> Updating b13d0a3..24b139e
+   Fast-forward
+     file1.txt | 1 +
+     1 file changed, 1 insertion(+)
+
+----------------------------------------------------------------------------------
+6. To verify the commit history
+git log --oneline --graph --all
+* 24b139e (HEAD -> master, new-branch) Updated file.txt in the new-branch
+* b13d0a3 Initial commit: Added file1.txt and file2.txt
+
+----------------------------------------------------------------------------------
+7. To delete the new-branch after merging
+git branch -d new-branch
+* 24b139e (HEAD -> master) Updated file.txt in the new-branch
+* b13d0a3 Initial commit: Added file1.txt and file2.txt
