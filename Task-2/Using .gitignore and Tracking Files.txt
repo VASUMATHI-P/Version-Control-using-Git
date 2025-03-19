@@ -1,0 +1,87 @@
+Using .gitignore and Tracking Files
+
+Files which are already exist and tracked by git
+git ls-files
+=> file1.txt
+   file2.txt
+
+1. Creating a .gitignore file
+echo "node_modules/" > .gitignore  
+echo "*.log" >> .gitignore  
+echo "temp/" >> .gitignore  
+echo ".env" >> .gitignore
+
+=> Ignores node_modules and temp directory and Ignores all the .log files and .env file
+
+---------------------------------------------------------------------------------------
+2. Adding files that match and don't match .gitignore
+mkdir node_modules  
+mkdir temp
+echo. > error.log
+echo. > .env
+echo "This is File3" > file3.txt
+echo "This is File4" > file4.txt
+  
+---------------------------------------------------------------------------------------
+3. Checking Git status
+
+git status
+=> On branch master
+Untracked files:
+  (use "git add <file>..." to include in what will be committed)
+        .gitignore
+        file3.txt
+        file4.txt
+nothing added to commit but untracked files present (use "git add" to track)
+
+=> Here, we haven't committed the .gitignore file yet but, Git will start ignoring files as soon as .gitignore exists, even before committing it.
+
+----------------------------------------------------------------------------------------
+4. Staging all the other files and committing them
+
+git add file3.txt file4.txt .gitignore
+
+git commit -m "Added file3.txt, file4.txt, and .gitignore"
+=> [master ba864c5] Added file3.txt, file4.txt, and .gitignore
+  3 files changed, 6 insertions(+)
+  create mode 100644 .gitignore
+  create mode 100644 file3.txt
+  create mode 100644 file4.txt
+
+----------------------------------------------------------------------------------------
+5. Again checking the Git status
+
+git status
+=> On branch master
+nothing to commit, working tree clean
+
+----------------------------------------------------------------------------------------
+6. List ignored Untracked files
+git ls-files --others --ignored --exclude-standard
+=> .env
+   error.log
+
+#Not showing node_modules and temp directory because the folders are empty (No files)
+
+----------------------------------------------------------------------------------------
+7. Adding files inside node_modules and temp directory
+cd node_modules
+echo. > lib.js
+cd ..
+cd temp
+echo. > dummy.txt
+
+----------------------------------------------------------------------------------------
+8. Again Let's List the ignored Untracked files
+git ls-files --others --ignored --exclude-standard
+=> .env
+   error.log
+   node_modules/lib.js
+   temp/dummy.txt
+
+----------------------------------------------------------------------------------------
+9. Git status
+=> On branch master
+nothing to commit, working tree clean
+
+# Hence, The files listed in the .gitignore files are not tracked by the Git.
