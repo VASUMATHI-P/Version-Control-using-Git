@@ -1,0 +1,132 @@
+Undoing Changes and Reverting Commits
+
+File3 and File4 already exists. Let's modify and commit it and try undoing the changes committed.
+
+Modify file3.txt and file4.txt
+echo "New added content for file3" >> file3.txt
+echo "New added content for file4" >> file4.txt
+
+-----------------------------------------------------------------------------
+1. Undoing uncommitted changes 
+
+git status
+=> On branch master
+  Changes not staged for commit:
+  (use "git add <file>..." to update what will be committed)
+  (use "git restore <file>..." to discard changes in working directory)
+        modified:   file3.txt
+        modified:   file4.txt
+
+# This command will discard the changes made on these files.
+git restore file3.txt file4.txt
+
+git status
+=> On branch master
+nothing to commit, working tree clean
+
+-----------------------------------------------------------------------------
+2. Stage Changes and Unstage Them Before Committing
+
+git add file3.txt file4.txt
+git status
+=> On branch master
+  Changes to be committed:
+  (use "git restore --staged <file>..." to unstage)
+        modified:   file3.txt
+        modified:   file4.txt
+
+# This command will remove them from staging but will keep the changes.
+git restore --staged file3.txt file4.txt
+
+git status
+=> On branch master
+  Changes not staged for commit:
+  (use "git add <file>..." to update what will be committed)
+  (use "git restore <file>..." to discard changes in working directory)
+        modified:   file3.txt
+        modified:   file4.txt
+
+-----------------------------------------------------------------------------
+3. Commit changes and undo the last commit
+
+git add file3.txt file4.txt
+git commit -m "Updated file3.txt and file4.txt"
+=> [master 20111b9] Updated file3.txt and file4.txt
+ 2 files changed, 4 insertions(+)
+
+i) git reset --soft HEAD~1 (# It removes commit, keeps changes staged)
+git status
+On branch master
+Changes to be committed:
+  (use "git restore --staged <file>..." to unstage)
+        modified:   file3.txt
+        modified:   file4.txt
+
+ii) git reset --mixed HEAD~1 (# Removes commit, unstages changes)
+On branch master
+Changes not staged for commit:
+  (use "git add <file>..." to update what will be committed)
+  (use "git restore <file>..." to discard changes in working directory)
+        modified:   file3.txt
+        modified:   file4.txt
+
+iii) git reset --hard HEAD~1 (# Removes commit and changes)
+HEAD is now at ba864c5 Added file3.txt, file4.txt, and .gitignore
+
+-------------------------------------------------------------------------------
+4. Reverting the Commit using git revert
+
+# git revert can be used for reverting the last commit and also older commits
+
+Syntax
+git revert <commit-id>
+
+git log --oneline --graph --all
+* c18eb28 (HEAD -> master) Updated file3.txt and file4.txt
+* ba864c5 Added file3.txt, file4.txt, and .gitignore
+* 75c4512 Updated file.txt in the new-branch
+* daffe33 Initial commit: Added file1.txt and file2.txt
+
+i) (Reverting the last commit)
+git revert c18eb28 
+=> [master ae7151a] Revert "Updated file3.txt and file4.txt"
+ 2 files changed, 2 deletions(-)
+
+git log --oneline --graph --all
+* ae7151a (HEAD -> master) Revert "Updated file3.txt and file4.txt"
+* c18eb28 Updated file3.txt and file4.txt
+* ba864c5 Added file3.txt, file4.txt, and .gitignore
+* 75c4512 Updated file.txt in the new-branch
+* daffe33 Initial commit: Added file1.txt and file2.txt
+
+# It will not remove the reverted commit from the log but, creates a new commit. 
+Here added new commit => ae7151a (HEAD -> master) Revert "Updated file3.txt and file4.txt"
+
+
+ii) (Reverting the older commit)
+git revert ba864c5
+=> [master 4fe3ef3] Revert "Added file3.txt, file4.txt, and .gitignore"
+   3 files changed, 6 deletions(-)
+   delete mode 100644 .gitignore
+   delete mode 100644 file3.txt
+   delete mode 100644 file4.txt
+
+git log --oneline --graph --all
+* 4fe3ef3 (HEAD -> master) Revert "Added file3.txt, file4.txt, and .gitignore"
+* ae7151a Revert "Updated file3.txt and file4.txt"
+* c18eb28 Updated file3.txt and file4.txt
+* ba864c5 Added file3.txt, file4.txt, and .gitignore
+* 75c4512 Updated file.txt in the new-branch
+* daffe33 Initial commit: Added file1.txt and file2.txt
+
+# It added new commit => 4fe3ef3 (HEAD -> master) Revert "Added file3.txt, file4.txt, and .gitignore"
+
+
+---------------------------------------------------------------------------------
+Difference between git revert and git reset
+
+* git revert => This does not remove the commit but will create the new commit that undoes the changes
+                Best for public/shared repositories to avoid breaking history
+
+* git reset  => Completely removes the commit and commit history and all changes.
+                Can recover with git reflog command.
