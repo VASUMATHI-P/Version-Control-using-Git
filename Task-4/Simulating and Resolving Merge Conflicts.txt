@@ -1,0 +1,85 @@
+Simulating and Resolving Merge Conflicts
+
+1. Initialize a git repo and create one file and make an initial commit
+
+git init
+echo "Quote" > file.txt
+git add .
+git commit -m "Initial commit: Adding file.txt"
+
+-----------------------------------------------------------------------------
+2. Creating first-branch and modifying the same line
+
+git checkout -b first-branch"
+echo "As long as I live, there are infinite chances." >> file.txt
+git add .
+git commit -m "Updated file.txt in first-branch"
+
+-----------------------------------------------------------------------------
+3. Creating second-branch and modifying the same line
+
+git checkout -b second-branch
+echo "Never stop believing in yourself." >> file.txt
+git add .
+git commit -m "Updated file.txt in second-branch"
+
+-----------------------------------------------------------------------------
+4. Two branches are created
+
+git log --oneline --graph --all
+
+* 2baa5f7 (HEAD -> second-branch) Updated file.txt in second-branch
+| * 218a1fb (first-branch) Updated file.txt in first-branch
+|/
+* 44355bb (master) Initial commit: Adding file.txt
+
+-----------------------------------------------------------------------------
+5. Merge second-branch into first-branch
+
+git checkout first-branch
+git merge second-branch
+
+=> Auto-merging file.txt
+CONFLICT (content): Merge conflict in file.txt
+Automatic merge failed; fix conflicts and then commit the result.
+
+-----------------------------------------------------------------------------
+6. Identify the conflict using git diff
+
+git diff
+=> diff --cc file.txt
+  "Quote"
+++<<<<<<< HEAD
+ +"As long as I live, there are infinite chances."
+++=======
++ "Never stop believing in yourself."
+++>>>>>>> second-branch
+
+-----------------------------------------------------------------------------
+7. Keeping the changes from first-branch
+
+git checkout first-branch
+git checkout --ours conflict-file.txt
+
+-----------------------------------------------------------------------------
+8. Finalize the merge
+
+git add file.txt
+git commit -m "Resolved conflict- Keeping the first branch changes
+
+=> [first-branch 182f6e2] Resolved conflict- Keeping the first branch changes
+
+-----------------------------------------------------------------------------
+9. Verifying the git log
+
+git log --oneline --graph --all
+*   182f6e2 (HEAD -> first-branch) Resolved conflict- Keeping the first branch changes
+|\
+| * 2baa5f7 (second-branch) Updated file.txt in second-branch
+* | 218a1fb Updated file.txt in first-branch
+|/
+* 44355bb (master) Initial commit: Adding file.txt
+
+------------------------------------------------------------------------------
+
+# If need to keep the changes from both the branches, then we should merge the files manually and commit it.
