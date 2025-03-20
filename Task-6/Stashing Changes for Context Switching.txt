@@ -1,0 +1,68 @@
+----------------------------------------
+|Stashing Changes for Context Switching |
+----------------------------------------
+
+Git stash :
+    You have uncommitted changes but need to switch branches.
+    Use git stash to temporarily store those changes.
+    Switch to any other branch and work there.
+    Commit your changes in that branch as needed.
+    Switch back to your original branch.
+    Use git stash pop to retrieve and apply your stashed changes.
+
+1. Lets initialize a git repo and commit a login file
+
+git init
+echo "Login funtionality" > login.txt
+git add login.txt
+git commit -m "Login feature"
+
+-----------------------------------------------------------------------------
+2. Updating the Login file and stashing it
+echo "Updating the Login functionality" >> login.txt
+git stash
+git stash list
+
+=> stash@{0}: WIP on master: 3a21239 Login feature
+
+-----------------------------------------------------------------------------
+3. Switching to new branch and commit the changes
+
+git checkout -b new-feature
+echo "New feature is added" > file.txt
+git commit -m "new feature branch file"
+
+-----------------------------------------------------------------------------
+4. Switch back to original branch and pop/apply the stash
+
+git checkout master
+git stash apply
+git commit -m "Updated the Login feature"
+
+-----------------------------------------------------------------------------
+5. Verify the commit history
+
+git log --graph --all --oneline
+* 6aee05d (HEAD -> master) Updated the Login feature
+| * f10d274 (new-feature) new feature branch file
+|/
+* 3a21239 Login feature
+
+-----------------------------------------------------------------------------
+6. Merge the master and new-feature
+
+git checkout master
+git merge new-feature
+=> Merge made by the 'ort' strategy.
+   file.txt | 1 +
+   1 file changed, 1 insertion(+)
+   create mode 100644 file.txt
+
+-----------------------------------------------------------------------------
+#Lists all the stashes
+git stash list 
+stash@{0}: WIP on master: 3a21239 Login feature
+
+#To Drop the stash
+git stash drop stash@{0}
+Dropped stash@{0} (1e34ca4a7ef534f4ea0042c12b0957baa85366b8)
