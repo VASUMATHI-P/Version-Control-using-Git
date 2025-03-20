@@ -1,0 +1,62 @@
+Interactive Rebasing for Clean Commit History
+
+# git rebase is used to clean up the commit messages
+
+1. Initialize a git repo and create one file and make an initial commit
+
+git init
+echo "Initial commit on file1" > file.txt
+git add .
+git commit -m "Initial commit: Adding file.txt"
+
+-----------------------------------------------------------------------------
+2. Lets create a series of commits
+
+echo "First update" >> file.txt
+git add file.txt
+git commit -m "Added first update"
+
+echo "Second update" >> file.txt
+git add file.txt
+git commit -m "Added second update"
+
+echo "Fixed a typo" >> file.txt
+git add file.txt
+git commit -m "Fix typo"
+
+echo "Refactored code" >> file.txt
+git add file.txt
+git commit -m "Refactored some content"
+
+-----------------------------------------------------------------------------
+3. Check the commit history
+
+git log --oneline
+
+=> bdcd0ce (HEAD -> master) Refactored some content
+   f03a22c Fix typo
+   ba3f936 Added second update
+   46e97bb Added first update
+   8676615 Initial commit
+
+-----------------------------------------------------------------------------
+4. Let's start a interactive rebase
+git rebase -i HEAD~4
+
+# Merged the last 4 commit message into one commit message (46e97bb Added first update) and edited that commit message into "Improved file.txt wit updates, typo fixes and refactoring"
+
+=> [detached HEAD f485ef5] Improved file.txt wit updates, typo fixes and refactoring
+ Date: Wed Mar 19 21:53:20 2025 +0530
+ 1 file changed, 4 insertions(+)
+ Successfully rebased and updated refs/heads/master.
+
+-----------------------------------------------------------------------------
+5. Verify the commit history
+
+git log --oneline
+
+=> f485ef5 (HEAD -> master) Improved file.txt wit updates, typo fixes and refactoring
+   8676615 Initial commit
+
+# Now, instead of multiple small commits, we have one clean commit.
+# Improves readability
