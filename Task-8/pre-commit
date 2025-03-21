@@ -1,0 +1,30 @@
+#!/bin/bash
+echo "Running pre-commit hook..."
+
+# Check if ESLint is installed
+if ! command -v eslint &> /dev/null
+then
+    echo "ESLint is not installed. Install it using: npm install -g eslint"
+    exit 1
+fi
+
+# Get all staged JavaScript files
+js_files=$(git diff --cached --name-only --diff-filter=ACM | grep -E "\.js$")
+
+# If no JS files are found, exit successfully
+if [ -z "$js_files" ]; then
+    exit 0
+fi
+
+# Run ESLint on staged JS files
+echo "Checking JavaScript files with ESLint..."
+eslint $js_files
+
+# If ESLint fails, block commit
+if [ $? -ne 0 ]; then
+    echo "ESLint errors found. Commit rejected!"
+    exit 1
+fi
+
+echo "All JavaScript files passed ESLint!"
+exit 0

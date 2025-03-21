@@ -1,0 +1,105 @@
+----------------------------------------
+| Using Git Hooks for Automated Checks  |
+----------------------------------------
+
+#Git Hooks
+Git hooks are scripts that run automatically at different stages of the Git workflow
+They help enforce coding standards, catch errors early
+
+Types of git hooks
+i)   Pre-commit hook => Runs before committing
+ii)  Pre-push Hook - Runs before pushing
+iii) Commit-msg Hook - Validates commit messages for consistency and readability.
+iv)  Post-merge Hook - Runs after merging.
+
+Benefits
+* Automates code quality checks
+* Prevents Broken Code
+* Maintains Consistency
+--------------------------------------------------------------------------------------
+1. Initialize a git repository
+
+git init
+
+--------------------------------------------------------------------------------------
+2. Create the pre-commit hook inside ./git/hooks and make it executable
+
+touch .git/hooks/pre-commit
+nano .git/hooks/pre-commit
+
+#!/bin/bash
+echo "Running pre-commit hook..."
+
+if ! command -v eslint &> /dev/null
+then
+    echo "ESLint is not installed. Install it using: npm install -g eslint"
+    exit 1
+fi
+
+js_files=$(git diff --cached --name-only --diff-filter=ACM | grep -E "\.js$")
+
+if [ -z "$js_files" ]; then
+    exit 0
+fi
+
+echo "Checking JavaScript files with ESLint..."
+eslint $js_files
+
+
+if [ $? -ne 0 ]; then
+    echo "ESLint errors found. Commit rejected!"
+    exit 1
+fi
+
+echo "All JavaScript files passed ESLint!"
+exit 0
+
+
+chmod +x .git/hooks/pre-commit
+
+--------------------------------------------------------------------------------------
+3.Install ESLint
+
+npm install -g eslint
+npx eslint --init
+
+--------------------------------------------------------------------------------------
+4. Test the pre-commit hook
+
+i) Create js file with error
+
+touch script.js
+nano script.js
+=> console.log("Hello World)
+
+ii) Try to commit it with error
+
+git add script.js
+git commit -m "Testing pre-commit hook with error"
+
+Running pre-commit hook...
+Checking JavaScript files with ESLint...
+C:\Users\Vasumathi\Desktop\Git Hooks\script.js
+  2:13  error  Parsing error: Unterminated string constant
+✖ 1 problem (1 error, 0 warnings)
+ESLint errors found. Commit rejected!
+
+
+iii) Try to commit it with no error
+
+nano script.js
+=> console.log("Hello World");
+git add script.js
+git cm "Trying to commit with no error"
+
+Running pre-commit hook...
+Checking JavaScript files with ESLint...
+All JavaScript files passed ESLint!
+[master 7aa7a7a] Trying to commit with no error
+ 2 files changed, 2 insertions(+)
+ create mode 100644 greet.js
+
+#If we try to commit a code with error, the pre-commit hook will stop it.
+#If no error, the commit will be successful.
+
+------------------------------------------------------------------------------------
