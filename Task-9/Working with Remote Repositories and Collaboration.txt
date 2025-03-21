@@ -1,0 +1,67 @@
+Working with Remote Repositories and Collaboration
+
+1. Initializing git and making initial commit with file1.txt
+
+git init
+echo "This is file1" > file1.txt
+git add file1.txt
+git commit -m "Initial commit"
+
+-----------------------------------------------------------------------------
+2. Creating a remote GitHub repo and pushing the commit
+
+git remote add origin https://github.com/VASUMATHI-P/git-repo.git
+git branch -M main
+git push -u origin main
+
+-----------------------------------------------------------------------------
+3. Switching to feature branch to create a new feature and pushing it to remote repo
+
+git checkout -b feature-branch
+echo "Some new feature" > feature.txt
+git add feature.txt
+git commit -m "Added feature.txt"
+git push -u origin feature-branch
+
+-----------------------------------------------------------------------------
+4. Open a pull request in GitHub
+
+Add title, description and close it
+
+-----------------------------------------------------------------------------
+5. Review the code and merge it
+
+git pull origin main
+git checkout main
+git merge feature-branch
+git push -u origin main
+
+-----------------------------------------------------------------------------
+6.Verify the commit history
+
+git log --graph
+
+=> * commit a24b812611e500c1e0b7dda473a16a36afc514cf (HEAD -> main, origin/main, origin/feature-branch)
+| Author: VASUMATHI-P <vasumathi.p2021csec@sece.ac.in>
+| Date:   Thu Mar 20 20:25:56 2025 +0530
+|
+|     Added feature.txt
+|
+* commit 8f54cb3474bd98b01ea8120ecadb0705733f0500
+  Author: VASUMATHI-P <vasumathi.p2021csec@sece.ac.in>
+  Date:   Thu Mar 20 20:23:56 2025 +0530
+
+      Initial commit
+
+-----------------------------------------------------------------------------
+7. Deleting the local and remote branch
+
+git branch -d feature-branch
+git push origin --delete feature-branch
+
+-----------------------------------------------------------------------------
+8. Verifying the commit history
+
+git log --graph --oneline --all
+* a24b812 (HEAD -> main, origin/main) Added feature.txt
+* 8f54cb3 Initial commit
