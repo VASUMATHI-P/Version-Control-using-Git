@@ -1,0 +1,130 @@
+ --------------------------------------------------------
+| Comprehensive Workflow with Forced Pushes and Recovery |
+ --------------------------------------------------------
+
+1. Initializing git and making initial commit and pushing it to remote repo
+
+git init
+echo "Initial file" > file.txt
+git add file.txt
+git commit -m "Initial commit"
+git remote add origin https://github.com/VASUMATHI-P/git-repo.git
+git branch -M main
+git push -u origin main
+
+-----------------------------------------------------------------------------
+2. Creating 3 different branches. (Feature, Bug fix, Releases)
+
+git checkout -b feature-branch
+echo "Feature A" > feature.txt
+git add feature.txt
+git commit -m "Add Feature A"
+
+git checkout -b bugfix-branch main
+echo "Bug Fix 101" > bugfix.txt
+git add bugfix.txt
+git commit -m "Fix: Resolved issue #101"
+
+git checkout -b release-1.0 main
+echo "Release 1.0" > release.txt
+git add release.txt
+git commit -m "Release: Version 1.0 documentation"
+
+git push origin feature-branch bugfix-branch release-1.0
+
+---------------------------------------------------------------------------
+3. Updating the feature.txt with new feature B
+
+git checkout feature-branch
+echo "Feature B" >> feature.txt
+git add feature.txt
+git commit -m "Add Feature B"
+
+---------------------------------------------------------------------------
+4. Here Feature.txt has 2 commits. Let's rebase it
+
+Add feature A, Add feature B
+Let's squash it and make it one (Add feature A, B)
+
+git log --graph --oneline --all
+
+* 5eccb0d (HEAD -> feature-branch) Add Feature B
+* 557e63a (origin/feature-branch) Add Feature A
+| * 464e759 (origin/release-1.0, release-1.0) Release: Version 1.0 documentation
+|/
+| * 3aa325e (origin/bugfix-branch, bugfix-branch) Fix: Resolved issue #101
+|/
+* c3dd952 (origin/main, main) Initial commit
+
+git rebase -i HEAD~2
+
+=> [detached HEAD 608cd07] Add Feature A, B
+ Date: Fri Mar 21 08:20:06 2025 +0530
+ 1 file changed, 2 insertions(+)
+ create mode 100644 feature.txt
+Successfully rebased and updated refs/heads/feature-branch.
+
+---------------------------------------------------------------------------
+4. Lets force push to remote repo
+
+git push --force origin feature-branch
+git log --oneline --all --graph
+
+=> 
+* 608cd07 (HEAD -> feature-branch, origin/feature-branch) Add Feature A, B
+| * 464e759 (origin/release-1.0, release-1.0) Release: Version 1.0 documentation
+|/
+| * 3aa325e (origin/bugfix-branch, bugfix-branch) Fix: Resolved issue #101
+|/
+* c3dd952 (origin/main, main) Initial commit
+
+---------------------------------------------------------------------------
+5. The commit history for Feature A, B is lost. We can recover them using git reflog.
+
+git reflog
+=> 
+608cd07 (HEAD -> feature-branch, origin/feature-branch) HEAD@{0}: rebase (finish): returning to refs/heads/feature-branch
+608cd07 (HEAD -> feature-branch, origin/feature-branch) HEAD@{1}: rebase (squash): Add Feature A, B
+557e63a HEAD@{2}: rebase (start): checkout HEAD~2
+5eccb0d HEAD@{3}: commit: Add Feature B
+557e63a HEAD@{4}: checkout: moving from release-1.0 to feature-branch
+464e759 (origin/release-1.0, release-1.0) HEAD@{5}: commit: Release: Version 1.0 documentation
+c3dd952 (origin/main, main) HEAD@{6}: checkout: moving from bugfix-branch to release-1.0
+3aa325e (origin/bugfix-branch, bugfix-branch) HEAD@{7}: commit: Fix: Resolved issue #101
+c3dd952 (origin/main, main) HEAD@{8}: checkout: moving from feature-branch to bugfix-branch
+557e63a HEAD@{9}: commit: Add Feature A
+c3dd952 (origin/main, main) HEAD@{10}: checkout: moving from main to feature-branch
+c3dd952 (origin/main, main) HEAD@{11}: Branch: renamed refs/heads/main to refs/heads/main
+c3dd952 (origin/main, main) HEAD@{13}: Branch: renamed refs/heads/main to refs/heads/main
+c3dd952 (origin/main, main) HEAD@{15}: Branch: renamed refs/heads/master to refs/heads/main
+c3dd952 (origin/main, main) HEAD@{17}: commit (initial): Initial commit
+
+---------------------------------------------------------------------------
+6. Reset the Head@{3} (5eccb0d HEAD@{3}: commit: Add Feature B)
+
+git reset --hard b53c0d1
+git log --graph --oneline --all
+
+* 608cd07 (origin/feature-branch) Add Feature A, B
+| * 5eccb0d (HEAD -> feature-branch) Add Feature B
+| * 557e63a Add Feature A
+|/
+| * 464e759 (origin/release-1.0, release-1.0) Release: Version 1.0 documentation
+|/
+| * 3aa325e (origin/bugfix-branch, bugfix-branch) Fix: Resolved issue #101
+|/
+* c3dd952 (origin/main, main) Initial commit
+
+#The lost commits are recovered (Add Feature A, Add Feature B)
+
+---------------------------------------------------------------------------
+
+# Best Practices
+
+Instead of force pushing, we can use --force-with-lease
+
+--force push => overwrites history on the remote, potentially deletes the other works.
+
+--force-with-lease => Prevents from overwriting other works. It prevents the force push
+
+If we try to rewrite history like reset, rebase and force push, should inform the team about the changes. So that they can fetch the latest changes and can work on them
